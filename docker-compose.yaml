@@ -1,33 +1,6 @@
 version: "3.9"
 services:
 
-#  pyetldb:
-#    image: postgres:alpine
-#    container_name: pyetldb
-#    hostname: pyetldb
-#    ports:
-#      - "54322:5432"
-#    environment:
-#      POSTGRES_DB: pyetldb
-#      POSTGRES_USER: admin_user
-#      POSTGRES_PASSWORD: "123456"
-#    networks:
-#      eth0:
-#        ipv4_address: 192.168.43.2
-#  
-#  pgadmin:
-#    image: dpage/pgadmin4
-#    container_name: pgadmin
-#    hostname: pgadmin
-#    ports:
-#      - "80:80"
-#    environment:
-#      PGADMIN_DEFAULT_EMAIL: admin@domain.com
-#      PGADMIN_DEFAULT_PASSWORD: 123456
-#    networks:
-#      eth0:
-#        ipv4_address: 192.168.43.3
-  
   pyetlapp:
     build:  
       context: .
@@ -37,8 +10,6 @@ services:
     hostname: pyetlapp
     ports:
       - "4040:4040"
-    #stdin_open: true
-    #tty: true 
     networks:
       eth0:
         ipv4_address: 192.168.43.4
