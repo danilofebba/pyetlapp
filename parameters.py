@@ -24,7 +24,7 @@ data_sources = [
                 "data_file_schema": None,
                 "storage": {
                     "bucket": "my_bucket",
-                    "object_path": ['my', 'path']
+                    "object_path": ["my", "path"]
                 },
                 "metadata": {
                     "array_size": 10000,
@@ -40,7 +40,7 @@ data_sources = [
                           from public.my_table as t
                          where t.updated_at >= '%(start)s' and t.updated_at < '%(end)s'
                     """,
-                    "partition_by": ['year', 'month', 'day']
+                    "partition_by": ["year", "month", "day"]
                 }
             }
         ]
