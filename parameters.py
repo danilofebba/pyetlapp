@@ -24,7 +24,7 @@ data_sources = [
                 "data_file_schema": None,
                 "storage": {
                     "bucket": "my_bucket",
-                    "object_path": ["my", "path"]
+                    "object_path": {"group": "my_group", "company": "my_company"}
                 },
                 "metadata": {
                     "array_size": 10000,
@@ -34,13 +34,11 @@ data_sources = [
                              , t.field3
                              , t.created_at
                              , t.updated_at
-                             , to_char(t.updated_at, 'YYYY') as year
-                             , to_char(t.updated_at, 'MM') as month
-                             , to_char(t.updated_at, 'DD') as day
+                             , to_char(t.created_at, 'YYYY-MM-DD') as date
                           from public.my_table as t
                          where t.updated_at >= '%(start)s' and t.updated_at < '%(end)s'
                     """,
-                    "partition_by": ["year", "month", "day"]
+                    "partition_by": ["date"]
                 }
             }
         ]
