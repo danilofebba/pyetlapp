@@ -17,16 +17,7 @@ logging.basicConfig(
     level=logging.INFO 
 )
 
-dsn = {
-    "host": os.environ['PYETLDB_HOST'],
-    "port": os.environ['PYETLDB_PORT'],
-    "dbname": os.environ['PYETLDB_DBNAME'],
-    "user": os.environ['PYETLDB_USER'],
-    "password": os.environ['PYETLDB_PASSWORD']
-}
-
-parameters = batches_control.pgsql_db_creation(dsn=dsn, parameters=parameters.data_sources)
-if parameters:
+def execute_batches_extraction(dsn):
     batches = data_manipulation.pgsql_data_read(
         dsn=dsn,
         query="""
@@ -100,3 +91,15 @@ if parameters:
             )
         spark.stop()
         del spark
+
+if __name__ == '__main__':
+    dsn = {
+        "host": os.environ['PYETLDB_HOST'],
+        "port": os.environ['PYETLDB_PORT'],
+        "dbname": os.environ['PYETLDB_DBNAME'],
+        "user": os.environ['PYETLDB_USER'],
+        "password": os.environ['PYETLDB_PASSWORD']
+    }
+    parameters = batches_control.pgsql_db_creation(dsn=dsn, parameters=parameters.data_sources)
+    if parameters:
+        execute_batches_extraction(dsn)
