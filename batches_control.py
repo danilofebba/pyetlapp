@@ -17,16 +17,6 @@ def pgsql_db_creation(dsn, parameters):
         cursor = connection.cursor()
         try:
             cursor.execute('''
-                create schema if not exists public.tb_data_sources (
-                    id       serial            not null,
-                    name     character varying not null,
-                    type     character varying not null,
-                    metadata jsonb             not null,
-                    constraint uq_data_sources unique (name)
-                )
-            ''')
-            connection.commit()
-            cursor.execute('''
                 create table if not exists public.tb_data_sources (
                     id       serial            not null,
                     name     character varying not null,
