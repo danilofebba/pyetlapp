@@ -52,7 +52,6 @@ def pgsql_data_write(dsn, query, parameters=None):
             return True
         except Exception as e:
             connection.rollback()
-            logger.info(cursor.query) ###########################tirar
             logger = logging.getLogger('data_manipulation')
             logger.critical(e.args[0])
             return False
