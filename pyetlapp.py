@@ -26,7 +26,6 @@ dsn = {
 }
 
 parameters = batches_control.pgsql_db_creation(dsn=dsn, parameters=parameters.data_sources)
-
 if parameters:
     batches = data_manipulation.pgsql_data_read(
         dsn=dsn,
@@ -55,18 +54,14 @@ if parameters:
                      , o.id asc
         """
     )
-
     if batches:
-
         spark = SparkSession \
             .builder \
             .config("spark.jars", "jars/postgresql-42.3.6.jar, jars/aws-java-sdk-bundle-1.12.257.jar, jars/hadoop-aws-3.2.0.jar") \
             .config("spark.hadoop.fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem") \
             .config("spark.hadoop.fs.s3a.aws.credentials.provider", "com.amazonaws.auth.DefaultAWSCredentialsProviderChain") \
             .getOrCreate()
-
         for batch in batches:
-
             t = time.time()
             df = spark.read \
                 .format("jdbc") \
@@ -79,7 +74,6 @@ if parameters:
                 .load()
             extracted_rows = df.count()
             extraction_time = round(time.time() - t, 3)
-            
             t = time.time()
             df.write \
                 .format(batch['data_file_format']) \
@@ -88,7 +82,6 @@ if parameters:
                 .mode('append') \
                 .save(batch['storage_path'])
             load_time = round(time.time() - t, 3)
-
             data_manipulation.pgsql_data_write(
                 dsn=dsn,
                 query="""
@@ -105,6 +98,5 @@ if parameters:
                     batch['batch_id']
                 )
             )
-
         spark.stop()
         del spark
