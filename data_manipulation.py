@@ -1,9 +1,7 @@
 import os
 import logging
 import json
-import sqlite3
 import psycopg2
-
 
 def pgsql_data_read(dsn, query, parameters=None):
     try:
@@ -64,59 +62,4 @@ def pgsql_data_write(dsn, query, parameters=None):
     except Exception as e:
         logger = logging.getLogger('data_manipulation')
         logger.critical(e.args[0])
-        return False
-
-
-
-
-def write_data(query, parameters=None):
-    database = os.path.join(os.getcwd(), 'pyetldb.db')
-    if os.path.exists(database):
-        try:
-            connection = sqlite3.connect(database)
-            cursor = connection.cursor()
-            cursor.execute(query, parameters)
-            connection.commit()
-            return True
-        except sqlite3.Error as e:
-            logger = logging.getLogger('sqlitedb')
-            logger.critical(e.args[0])
-            return False
-        finally:
-            cursor.close()
-            connection.close()
-    else:
-        logger = logging.getLogger('sqlitedb')
-        logger.critical('The pyetldb.db file does not exist!')
-        return False
-
-def read_data(query, parameters=None):
-    database = os.path.join(os.getcwd(), 'pyetldb.db')
-    if os.path.exists(database):
-        try:
-            connection = sqlite3.connect(database)
-            cursor = connection.cursor()
-            if parameters:
-                cursor.execute(query, parameters)
-            else:
-                cursor.execute(query)
-            data = []
-            while True:
-                rows = cursor.fetchall()
-                if rows:
-                    for row in rows:
-                        data.append(json.loads(row[0]))
-                    return data
-                else:
-                    break
-        except sqlite3.Error as e:
-            logger = logging.getLogger('sqlitedb')
-            logger.critical(e.args[0])
-            return False
-        finally:
-            cursor.close()
-            connection.close()
-    else:
-        logger = logging.getLogger('sqlitedb')
-        logger.critical('The pyetldb.db file does not exist!')
         return False
