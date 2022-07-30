@@ -3,7 +3,6 @@ import logging
 import datetime
 import dateutil.tz
 import json
-import sqlite3
 import psycopg2
 
 def pgsql_db_creation(dsn, parameters):
@@ -16,9 +15,7 @@ def pgsql_db_creation(dsn, parameters):
             password = dsn['password']
         )
         cursor = connection.cursor()
-        
         try:
-
             cursor.execute('''
                 create schema if not exists public.tb_data_sources (
                     id       serial            not null,
@@ -29,7 +26,6 @@ def pgsql_db_creation(dsn, parameters):
                 )
             ''')
             connection.commit()
-
             cursor.execute('''
                 create table if not exists public.tb_data_sources (
                     id       serial            not null,
@@ -40,7 +36,6 @@ def pgsql_db_creation(dsn, parameters):
                 )
             ''')
             connection.commit()
-
             cursor.execute('''
                 create table if not exists public.tb_objects (
                     id                            serial                      not null,
@@ -60,7 +55,6 @@ def pgsql_db_creation(dsn, parameters):
                 )
             ''')
             connection.commit()
-
             cursor.execute('''
             create table if not exists public.tb_batches (
                 id                            bigserial                   not null,
@@ -73,7 +67,6 @@ def pgsql_db_creation(dsn, parameters):
             )
             ''')
             connection.commit()
-
             for parameter in parameters:
                 cursor.execute(
                     '''
@@ -88,7 +81,6 @@ def pgsql_db_creation(dsn, parameters):
                     )
                 )
                 connection.commit()
-
                 cursor.execute('''select id from tb_data_sources where name = %s''', (parameter['name'],))
                 data_source_id = cursor.fetchall()
                 if data_source_id:
@@ -124,7 +116,6 @@ def pgsql_db_creation(dsn, parameters):
                             )
                         )
                         connection.commit()
-
             cursor.execute('''
                 with objects as (
                         select o.id
@@ -185,10 +176,10 @@ def pgsql_db_creation(dsn, parameters):
                             }
                             ################################################################################################
                             cursor.execute(
-                                """
+                                '''
                                     insert into tb_batches(object_id, extraction_datetime, metadata)
                                         values(%s, %s, %s)
-                                """, (
+                                ''', (
                                     object['id'],
                                     extraction_start,
                                     json.dumps(metadata)
@@ -197,7 +188,6 @@ def pgsql_db_creation(dsn, parameters):
                         extraction_start += datetime.timedelta(seconds=object['extraction_interval'])
                     connection.commit()
             return True
-
         except Exception as e:
             connection.rollback()
             logger = logging.getLogger('pgsql_db_creation')
@@ -210,190 +200,3 @@ def pgsql_db_creation(dsn, parameters):
         logger = logging.getLogger('pgsql_db_creation')
         logger.critical(e.args[0])
         return False
-
-
-#def sqlite_db_creation(parameters):
-#
-#    database = os.path.join(os.getcwd(), 'pyetldb.db')
-#    try:
-#        connection = sqlite3.connect(database)
-#        cursor = connection.cursor()
-#
-#        cursor.execute('''
-#            create table if not exists tb_data_sources (
-#                id       integer not null primary key autoincrement,
-#                name     text    not null,
-#                type     text    not null,
-#                metadata blob    not null,
-#                constraint uq_data_sources unique (name)
-#            )
-#        ''')
-#        connection.commit()
-#
-#        cursor.execute('''
-#            create table if not exists tb_objects (
-#                id                            integer not null primary key autoincrement,
-#                data_source_id                integer not null,
-#                name                          text    not null,
-#                extraction_start              text    not null,
-#                extraction_end                text    not null,
-#                extraction_interval           integer not null,
-#                extraction_period             integer not null,
-#                extraction_timezone           text    not null,
-#                number_of_extraction_attempts integer not null,
-#                data_file_format              text    not null,
-#                data_file_schema              text        null,
-#                storage                       blob    not null,
-#                metadata                      blob    not null,
-#                constraint uq_objects unique (name)
-#            )
-#        ''')
-#        connection.commit()
-#
-#        cursor.execute('''
-#        create table if not exists tb_batches (
-#            id                            integer  not null primary key autoincrement,
-#            object_id                     integer  not null,
-#            extraction_datetime           text     not null,
-#            metadata                      blob     not null,
-#            extraction_status             smallint not null default 0,
-#            number_of_extraction_attempts smallint not null default 0,
-#            extraction_metrics            blob         null
-#        )
-#        ''')
-#        connection.commit()
-#
-#        for i in parameters:
-#            cursor.execute(
-#                '''
-#                    insert into tb_data_sources(name, type, metadata)
-#                        values(?, ?, ?)
-#                    on conflict(name)
-#                    do update set metadata = excluded.metadata
-#                ''', (
-#                    i['name'],
-#                    i['type'],
-#                    json.dumps(i['metadata'])
-#                )
-#            )
-#            connection.commit()
-#
-#            cursor.execute('''select id from tb_data_sources where name = ?''', (i['name'],))
-#            data_source_id = cursor.fetchall()
-#            if data_source_id:
-#                for j in i['objects']:
-#                    cursor.execute(
-#                        '''
-#                            insert into tb_objects(data_source_id, name, extraction_start, extraction_end, extraction_interval, extraction_period, extraction_timezone, number_of_extraction_attempts, data_file_format, data_file_schema, storage, metadata)
-#                            values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-#                            on conflict(name)
-#                            do update set extraction_start              = excluded.extraction_start
-#                                        , extraction_end                = excluded.extraction_end
-#                                        , extraction_interval           = excluded.extraction_interval
-#                                        , extraction_period             = excluded.extraction_period
-#                                        , extraction_timezone           = excluded.extraction_timezone
-#                                        , number_of_extraction_attempts = excluded.number_of_extraction_attempts
-#                                        , data_file_format              = excluded.data_file_format
-#                                        , data_file_schema              = excluded.data_file_schema
-#                                        , storage                       = excluded.storage
-#                                        , metadata                      = excluded.metadata
-#                        ''', (
-#                            data_source_id[0][0],
-#                            j['name'],
-#                            j['extraction_start'],
-#                            j['extraction_end'],
-#                            j['extraction_interval'],
-#                            j['extraction_period'],
-#                            j['extraction_timezone'],
-#                            j['number_of_extraction_attempts'],
-#                            j['data_file_format'],
-#                            json.dumps(j['data_file_schema']) if j['data_file_schema'] else None,
-#                            json.dumps(j['storage']),
-#                            json.dumps(j['metadata'])
-#                        )
-#                    )
-#                    connection.commit()
-#
-#        cursor.execute('''
-#            with objects as (
-#                select o.id
-#                    , o.name
-#                    , o.extraction_start
-#                    , o.extraction_end
-#                    , o.extraction_interval
-#                    , o.extraction_period
-#                    , o.extraction_timezone
-#                    , o.storage
-#                from tb_objects as o
-#                where o.extraction_end > datetime(current_timestamp, '+' || o.extraction_interval || ' second')
-#            ), batches as (
-#                select b.object_id
-#                    , max(b.extraction_datetime) as extraction_datetime
-#                from tb_batches as b
-#            group by b.object_id
-#            )
-#                select json_object(
-#                        'id', objects.id,
-#                        'name', objects.name,
-#                        'extraction_start', case when batches.extraction_datetime is not null then datetime(batches.extraction_datetime, '+' || objects.extraction_interval || ' second') else objects.extraction_start end,
-#                        'extraction_end', objects.extraction_end,
-#                        'extraction_interval', objects.extraction_interval,
-#                        'extraction_period', objects.extraction_period,
-#                        'extraction_timezone', objects.extraction_timezone,
-#                        'bucket', json_extract(objects.storage, '$.bucket'),
-#                        'object_path', json_extract(objects.storage, '$.object_path')
-#                    ) as data
-#                from objects
-#            left join batches on objects.id = batches.object_id
-#        ''')
-#        objects = []
-#        while True:
-#            rows = cursor.fetchmany()
-#            if rows:
-#                for row in rows:
-#                    objects.append(row[0])
-#            else:
-#                break
-#        if objects:
-#            for object in objects:
-#                extraction_start = datetime.datetime.strptime(object['extraction_start'], '%Y-%m-%d %H:%M:%S')
-#                while extraction_start <= datetime.datetime.now() - datetime.timedelta(seconds=object['extraction_interval']):
-#                    for i in range(object['extraction_period']):
-#                        dti = extraction_start.astimezone(dateutil.tz.gettz(object['extraction_timezone'])) - datetime.timedelta(seconds=object['extraction_interval'] * i)
-#                        dtf = (extraction_start.astimezone(dateutil.tz.gettz(object['extraction_timezone'])) + datetime.timedelta(seconds=object['extraction_interval'])) - datetime.timedelta(seconds=object['extraction_interval'] * i)
-#                        if object['object_path']:
-#                            storage_path = os.path.join('s3a://', object['bucket'], *object['object_path'], object['name'])
-#                        else:
-#                            storage_path = os.path.join('s3a://', object['bucket'], object['name'])
-#                        ########################################### variable ###########################################
-#                        metadata = {
-#                            'parameters': {
-#                                'datetime': {
-#                                    'start': dti.strftime('%Y-%m-%d %H:%M:%S'),
-#                                    'end': dtf.strftime('%Y-%m-%d %H:%M:%S')
-#                                },
-#                                'storage_path': storage_path
-#                            }
-#                        }
-#                        ################################################################################################
-#                        cursor.execute(
-#                            """
-#                                insert into tb_batches(object_id, extraction_datetime, metadata)
-#                                    values(?, ?, ?)
-#                            """, (
-#                                object['id'],
-#                                extraction_start,
-#                                json.dumps(metadata)
-#                            )
-#                        )
-#                    extraction_start += datetime.timedelta(seconds=object['extraction_interval'])
-#                connection.commit()
-#        return True
-#
-#    except sqlite3.Error as e:
-#        logger = logging.getLogger('pyetldb')
-#        logger.critical(e.args[0])
-#        return False
-#    finally:
-#        cursor.close()
-#        connection.close()
