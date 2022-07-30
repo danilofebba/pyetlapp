@@ -151,9 +151,9 @@ def pgsql_db_creation(dsn, parameters):
                             dti = extraction_start.astimezone(dateutil.tz.gettz(object['extraction_timezone'])) - datetime.timedelta(seconds=object['extraction_interval'] * i)
                             dtf = (extraction_start.astimezone(dateutil.tz.gettz(object['extraction_timezone'])) + datetime.timedelta(seconds=object['extraction_interval'])) - datetime.timedelta(seconds=object['extraction_interval'] * i)
                             if object['object_path']:
-                                storage_path = os.path.join('s3a://', object['bucket'], *object['object_path'], object['name'])
+                                storage_path = os.path.join('s3a://', object['bucket'], *[f"{i}={object['object_path'][i]}" for i in object['object_path']], f"object={object['name']}")
                             else:
-                                storage_path = os.path.join('s3a://', object['bucket'], object['name'])
+                                storage_path = os.path.join('s3a://', object['bucket'], f"object={object['name']}")
                             ########################################### variable ###########################################
                             metadata = {
                                 'parameters': {
