@@ -6,7 +6,7 @@ Python ETL Application
 Minimum requirements:
 ```bash
 aws rds create-db-instance \
-    --db-instance-identifier my-db-instance \
+    --db-instance-identifier "my-db-instance" \
     --engine postgres \
     --engine-version "13.6" \
     --db-instance-class db.t3.micro \
@@ -16,8 +16,8 @@ aws rds create-db-instance \
     --storage-encrypted \
     --port 5432 \
     --db-name pyetldb \
-    --master-username my_user \
-    --master-user-password my_password \
+    --master-username "my_user" \
+    --master-user-password "my_password" \
     --publicly-accessible \
     --no-multi-az \
     --backup-retention-period 1 \
@@ -29,8 +29,8 @@ Minimum requirements:
 aws ec2 run-instances \
     --image-id ami-052efd3df9dad4825 \
     --instance-type t3.small \
-    --subnet-id **my-subnet-id** \
-    --security-group-ids my-security-group-id \
+    --subnet-id "my-subnet-id" \
+    --security-group-ids "my-security-group-id" \
     --associate-public-ip-address \
-    --key-name my_key_pair
+    --key-name "my_key_pair"
 ```
