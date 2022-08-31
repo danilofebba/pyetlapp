@@ -61,4 +61,16 @@ sudo curl -s https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.
 sudo curl -s https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.2.0/hadoop-aws-3.2.0.jar -o /opt/pyetlapp/jars
 sudo curl -s https://repo1.maven.org/maven2/org/postgresql/postgresql/42.3.6/postgresql-42.3.6.jar -o /opt/pyetlapp/jars
 
+echo "export PYETLDB_HOST=\"my-endpoint\"" >> ~/.bashrc
+echo "export PYETLDB_PORT=\"my_port\"" >> ~/.bashrc
+echo "export PYETLDB_DBNAME=\"pyetldb\"" >> ~/.bashrc
+echo "export PYETLDB_USER=\"my_user\"" >> ~/.bashrc
+echo "export PYETLDB_PASSWORD=\"my_password\"" >> ~/.bashrc
+
+echo "export DATA_SOURCE_USER=\"my_user\"" >> ~/.bashrc
+echo "export DATA_SOURCE_PASSWORD=\"my_password\"" >> ~/.bashrc
+
+echo "export AWS_ACCESS_KEY_ID=\"my_aws_access_key_id\"" >> ~/.bashrc
+echo "export AWS_SECRET_ACCESS_KEY=\"my_aws_secret_access_key\"" >> ~/.bashrc
+
 ```
