@@ -86,6 +86,7 @@ Configure your security credentials on the EC2 instance. Link for reference: [Co
 #### Step 5
 Configure your application parameters file: /opt/pyetlapp/parameters.py
 #### Step 6
+Configure crontab
 ```bash
 crontab -l > my_crontab
 echo "0 4 * * * /usr/bin/python3 /opt/pyetlapp/pyetlapp.py" >> my_crontab
