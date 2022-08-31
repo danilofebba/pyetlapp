@@ -3,6 +3,7 @@ Python ETL Application
 
 ## AWS
 ### Create database
+####Step 1
 Minimum requirements:
 ```bash
 aws rds create-db-instance \
@@ -24,6 +25,7 @@ aws rds create-db-instance \
     --tags Key="my_key",Value="my_value"
 ```
 ### Launch instance EC2
+####Step 2
 Minimum requirements:
 ```bash
 aws ec2 run-instances \
@@ -34,6 +36,7 @@ aws ec2 run-instances \
     --associate-public-ip-address \
     --key-name "my_key_pair"
 ```
+####Step 3
 ```bash
 sudo apt update
 sudo apt install htop
@@ -79,5 +82,5 @@ echo "export DATA_SOURCE_PASSWORD=\"my_password\"" >> ~/.bashrc
 source ~/.bashrc
 
 ```
-Configuring the AWS CLI
+####Step 4
 [Configuring the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html)
