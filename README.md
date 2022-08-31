@@ -34,3 +34,31 @@ aws ec2 run-instances \
     --associate-public-ip-address \
     --key-name "my_key_pair"
 ```
+```bash
+sudo apt update
+sudo apt install htop
+sudo apt install vim
+sudo apt install git
+sudo apt install openjdk-8-jdk
+sudo apt install python3-pip
+sudo apt install awscli
+
+python3 -m pip install --upgrade pip
+python3 -m pip install --upgrade setuptools
+python3 -m pip install --upgrade wheel
+python3 -m pip install --upgrade python-dateutil
+python3 -m pip install --upgrade findspark
+python3 -m pip install --upgrade psycopg2-binary
+
+curl -s https://archive.apache.org/dist/spark/spark-3.1.3/spark-3.1.3-bin-hadoop3.2.tgz -o /tmp/spark-3.1.3-bin-hadoop3.2.tgz
+sudo tar -zxvf /tmp/spark-3.1.3-bin-hadoop3.2.tgz -C /opt
+sudo mv /opt/spark-3.1.3-bin-hadoop3.2 /opt/spark
+sudo rm /tmp/spark-3.1.3-bin-hadoop3.2.tgz
+
+sudo git clone https://github.com/danilofebba/pyetlapp.git /opt/pyetlapp
+sudo mkdir -p /opt/pyetlapp/jars
+sudo curl -s https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.12.257/aws-java-sdk-bundle-1.12.257.jar -o /opt/pyetlapp/jars
+sudo curl -s https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.2.0/hadoop-aws-3.2.0.jar -o /opt/pyetlapp/jars
+sudo curl -s https://repo1.maven.org/maven2/org/postgresql/postgresql/42.3.6/postgresql-42.3.6.jar -o /opt/pyetlapp/jars
+
+```
