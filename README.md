@@ -25,6 +25,7 @@ aws rds create-db-instance \
 ```
 ### Launch instance EC2
 Minimum requirements:
+```bash
 aws ec2 run-instances \
     --image-id ami-052efd3df9dad4825 \
     --instance-type t3.small \
@@ -32,3 +33,4 @@ aws ec2 run-instances \
     --security-group-ids my-security-group-id \
     --associate-public-ip-address \
     --key-name my_key_pair
+```
