@@ -80,7 +80,10 @@ echo "export DATA_SOURCE_USER=\"my_user\"" >> ~/.bashrc
 echo "export DATA_SOURCE_PASSWORD=\"my_password\"" >> ~/.bashrc
 
 source ~/.bashrc
-
 ```
 #### Step 4
 Configure your security credentials on the EC2 instance. Link for reference: [Configuring the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html)
+#### Step 5
+Configure your application parameters file: /opt/pyetlapp/parameters.py
+#### Step 6
+bla bla bla
