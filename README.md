@@ -79,3 +79,5 @@ echo "export DATA_SOURCE_PASSWORD=\"my_password\"" >> ~/.bashrc
 source ~/.bashrc
 
 ```
+Configuring the AWS CLI
+https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html
