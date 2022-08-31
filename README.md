@@ -83,4 +83,4 @@ source ~/.bashrc
 
 ```
 #### Step 4
-[Configuring the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html)
+Configure your security credentials on the EC2 instance. Link for reference: [Configuring the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html)
