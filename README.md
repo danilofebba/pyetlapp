@@ -8,7 +8,7 @@ Minimum requirements:
 aws rds create-db-instance \
     --db-instance-identifier "my-db-instance" \
     --engine postgres \
-    --engine-version "13.6" \
+    --engine-version 13.6 \
     --db-instance-class db.t3.micro \
     --storage-type gp2 \
     --allocated-storage 20 \
@@ -21,7 +21,7 @@ aws rds create-db-instance \
     --publicly-accessible \
     --no-multi-az \
     --backup-retention-period 1 \
-    --tags Key="my_project_name",Value="my_project_code"
+    --tags Key="my_key",Value="my_value"
 ```
 ### Launch instance EC2
 Minimum requirements:
