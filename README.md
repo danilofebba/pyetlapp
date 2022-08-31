@@ -1,8 +1,8 @@
 # pyetlapp
 Python ETL Application
 
-## Create the application database
-### AWS
+## AWS
+### Create database
 Minimum requirements:
 ```bash
 aws rds create-db-instance \
@@ -23,3 +23,12 @@ aws rds create-db-instance \
     --backup-retention-period 1 \
     --tags Key="my_project_name",Value="my_project_code"
 ```
+### Launch instance EC2
+Minimum requirements:
+aws ec2 run-instances \
+    --image-id ami-052efd3df9dad4825 \
+    --instance-type t3.small \
+    --subnet-id my-subnet-id \
+    --security-group-ids my-security-group-id \
+    --associate-public-ip-address \
+    --key-name my_key_pair
