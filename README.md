@@ -1,8 +1,9 @@
 # pyetlapp
 Python ETL Application
 
-## Create the application database:
-### AWS:
+## Create the application database
+### AWS
+Minimum requirements:
 ```bash
 aws rds create-db-instance \
     --db-instance-identifier my-db-instance \
