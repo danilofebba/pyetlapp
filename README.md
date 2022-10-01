@@ -2,6 +2,26 @@
 Python ETL Application
 
 ## AWS
+### Create bucket
+#### Step 0
+```bash
+aws s3api create-bucket \
+    --bucket my-bucket \
+    --region us-east-1 \
+    --object-ownership BucketOwnerEnforced
+
+aws s3api put-public-access-block \
+    --bucket my-bucket \
+    --public-access-block-configuration "BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true"
+
+aws s3api put-bucket-tagging \
+    --bucket my-bucket \
+    --tagging 'TagSet=[{Key=project,Value=01}]'
+
+aws s3api put-object \
+    --bucket my-bucket \
+    --key my-data-lake/
+```
 ### Create database
 #### Step 1
 Minimum requirements:
