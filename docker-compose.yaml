@@ -1,0 +1,168 @@
+version: "3.9"
+services:
+
+  svc-pgsql_transactional_01:
+    image: postgres:alpine
+    container_name: ctn-pgsql_transactional_01
+    hostname: pgsql_transactional_01
+    ports:
+      - "54310:5432"
+    environment:
+      - POSTGRES_DB=db_01
+      - POSTGRES_USER=user_01
+      - POSTGRES_PASSWORD=123456
+    networks:
+      eth_01:
+        ipv4_address: 192.168.0.10
+
+  svc-minio:
+    image: quay.io/minio/minio
+    container_name: ctn-minio
+    hostname: minio
+    ports:
+      - "9000:9000"
+      - "9090:9090"
+    environment:
+      - MINIO_ROOT_USER=user_01
+      - MINIO_ROOT_PASSWORD=qwert12345!@#$%
+    command: server /data --console-address ":9090"
+    networks:
+      eth_01:
+        ipv4_address: 192.168.0.20
+
+  svc-spark-master:
+    build:  
+      context: .
+      dockerfile: Dockerfile
+      target: tg-spark-master
+    image: img-spark-master:latest
+    container_name: ctn-spark-master
+    hostname: spark-master
+    ports:
+      - "8080:8080"
+      - "7077:7077"
+    environment:
+      - SPARK_MASTER_PORT=7077
+      - SPARK_MASTER_HOST=spark-master
+      - SPARK_MASTER_WEBUI_PORT=8080
+    networks:
+      eth_01:
+        ipv4_address: 192.168.0.30
+
+  svc-spark-worker-01:
+    build:  
+      context: .
+      dockerfile: Dockerfile
+      target: tg-spark-worker
+    image: img-spark-worker:latest
+    container_name: ctn-spark-worker-01
+    hostname: spark-worker-01
+    ports:
+      - "8081:8081"
+      - "7001:7001"
+    environment:
+      - SPARK_WORKER_CORES=2
+      - SPARK_WORKER_MEMORY=2g
+      - SPARK_WORKER_PORT=7001
+      - SPARK_WORKER_WEBUI_PORT=8081
+      - SPARK_MASTER_HOST=spark-master
+      - SPARK_MASTER_PORT=7077
+    depends_on:
+      - svc-spark-master
+    networks:
+      eth_01:
+        ipv4_address: 192.168.0.31
+
+  svc-spark-worker-02:
+    image: img-spark-worker:latest
+    container_name: ctn-spark-worker-02
+    hostname: spark-worker-02
+    ports:
+      - "8082:8082"
+      - "7002:7002"
+    environment:
+      - SPARK_WORKER_CORES=2
+      - SPARK_WORKER_MEMORY=2g
+      - SPARK_WORKER_PORT=7002
+      - SPARK_WORKER_WEBUI_PORT=8082
+      - SPARK_MASTER_HOST=spark-master
+      - SPARK_MASTER_PORT=7077
+    depends_on:
+      - svc-spark-master
+    networks:
+      eth_01:
+        ipv4_address: 192.168.0.32
+
+  svc-pyetldb:
+    image: postgres:alpine
+    container_name: ctn-pyetldb
+    hostname: pyetldb
+    ports:
+      - "54340:5432"
+    environment:
+      - POSTGRES_DB=pyetldb
+      - POSTGRES_USER=admin_user
+      - POSTGRES_PASSWORD=123456
+    networks:
+      eth_01:
+        ipv4_address: 192.168.0.40
+
+  svc-pyetlapp:
+    build:  
+      context: .
+      dockerfile: Dockerfile
+      target: tg-pyetlapp
+    image: img-pyetlapp:latest
+    container_name: ctn-pyetlapp
+    hostname: pyetlapp
+    ports:
+      - "4040-4049:4040-4049"
+      ############ provisory ############
+      - "8888:8888"
+      ###################################
+    environment:
+      - PYETLDB_HOST=192.168.0.40
+      - PYETLDB_PORT=5432
+      - PYETLDB_DBNAME=pyetldb
+      - PYETLDB_USER=admin_user
+      - PYETLDB_PASSWORD=123456
+      - DATA_SOURCE_USER=user_01
+      - DATA_SOURCE_PASSWORD=123456
+      - AWS_ACCESS_KEY_ID=user_01
+      - AWS_SECRET_ACCESS_KEY=qwert12345!@#$%
+    volumes:
+      - ./share:/opt/pyetlapp/share
+    depends_on:
+      - svc-pgsql_transactional_01
+      - svc-minio
+      - svc-spark-master
+      - svc-spark-worker-01
+      - svc-spark-worker-02
+      - svc-pyetldb
+    networks:
+      eth_01:
+        ipv4_address: 192.168.0.41
+
+  svc-pgadmin:
+    image: dpage/pgadmin4
+    container_name: ctn-pgadmin
+    hostname: pgadmin
+    ports:
+      - "80:80"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@domain.com
+      - PGADMIN_DEFAULT_PASSWORD=123456
+    volumes:
+      - ./pgadmin4/servers.json:/pgadmin4/servers.json
+    networks:
+      eth_01:
+        ipv4_address: 192.168.0.50
+    
+networks:
+  eth_01:
+    name: eth_01
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.0.0/24
