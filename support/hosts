@@ -1,0 +1,8 @@
+192.168.0.10 pgsql_transactional_01
+192.168.0.20 minio
+192.168.0.30 spark-master
+192.168.0.31 spark-worker-01
+192.168.0.32 spark-worker-02
+192.168.0.40 pyetldb
+192.168.0.41 pyetlapp
+192.168.0.50 pgadmin

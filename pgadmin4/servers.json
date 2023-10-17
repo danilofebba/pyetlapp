@@ -1,0 +1,36 @@
+{
+    "Servers": {
+        "1": {
+            "Name": "pgsql_transactional_01",
+            "Group": "01 - Transactional",
+            "Host": "pgsql_transactional_01",
+            "Port": 5432,
+            "MaintenanceDB": "db_01",
+            "Username": "user_01",
+            "UseSSHTunnel": 0,
+            "TunnelPort": "22",
+            "TunnelAuthentication": 0,
+            "KerberosAuthentication": false,
+            "ConnectionParameters": {
+                "sslmode": "prefer",
+                "connect_timeout": 10
+            }
+        },
+        "2": {
+            "Name": "pyetldb",
+            "Group": "02 - Data Lake",
+            "Host": "pyetldb",
+            "Port": 5432,
+            "MaintenanceDB": "pyetldb",
+            "Username": "admin_user",
+            "UseSSHTunnel": 0,
+            "TunnelPort": "22",
+            "TunnelAuthentication": 0,
+            "KerberosAuthentication": false,
+            "ConnectionParameters": {
+                "sslmode": "prefer",
+                "connect_timeout": 10
+            }
+        }
+    }
+}
