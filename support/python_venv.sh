@@ -1,3 +1,4 @@
+cd ~/Documents
 python3 -m venv venv
 source venv/bin/activate
 python3 -m pip install --upgrade pip setuptools wheel
@@ -8,4 +9,3 @@ echo -e "c.NotebookApp.password = 'argon2:\$argon2id\$v=19\$m=10240,t=10,p=8\$63
 python3 -m pip install --upgrade numpy pyarrow pandas
 python3 -m pip install --upgrade pyspark
 #jupyter lab --ip=0.0.0.0 --allow-root
-
