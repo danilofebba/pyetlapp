@@ -1,6 +1,10 @@
 # pyetlapp
 Python ETL Application
 
+## Local
+- Edit /etc/hosts
+- Read jars/README.md
+
 ## AWS
 ### Starting
 [AWS > IAM > Getting Started > Create Administrators Group](https://docs.aws.amazon.com/pt_br/IAM/latest/UserGuide/getting-started_create-admin-group.html)
@@ -127,3 +131,15 @@ tras depois os com dependências onde o numero de pacotes pai é igual a zero
 sempre ordenados por ordem de execução
 
 [Hadoop-AWS module: Integration with Amazon Web Services](https://hadoop.apache.org/docs/stable/hadoop-aws/tools/hadoop-aws/index.html)
+
+
+
+serviço A: cadastro de objetos no banco de dados. O serviço em python que lê o json de parametros e cadastra no banco
+
+ele cadstra novos
+gera json apartir do registro
+
+
+serviço B: dispar Job para o master
+
+seriço C: paralelismo de disparaos de pacotes atraves de consulta de batches com inclusão de novos batches a partir das configurações ja cadastradas no banco
