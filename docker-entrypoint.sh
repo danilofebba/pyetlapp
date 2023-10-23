@@ -1,7 +1,6 @@
 #!/bin/bash
-source config/pyetlapp_env.sh
-
 if [[ `hostname` == "pyetlapp" ]]; then
+    source config/pyetlapp_env.sh
     # python3 /opt/pyetlapp/pyetlapp.py
     ############################################# TMP #############################################
     jupyter notebook --generate-config
