@@ -1,14 +1,57 @@
-import subprocess
+import os
 import json
+import subprocess
+import concurrent.futures
 
-batch1 = json.dumps({"dsn":  {"host": "192.168.0.10", "port": "5432", "dbname": "db_01"}, "query": "select id, code, option, description, value, rate, created_at, updated_at, status, to_char(updated_at, 'YYYY-MM-DD') as date from public.tb_01 where updated_at >= '%(start)s' and updated_at < '%(end)s'", "parameters":  {"end": "2023-10-02 00:00:00", "start": "2023-10-01 00:00:00"}, "array_size": 1000000, "data_file_format": "parquet", "partition_by": ["date"], "storage_path": "s3a://ddfs-bucket-01/group/company/db_01_public_tb_01", "object_name": "db_01_public_tb_01", "batch_id": 2})
-batch2 = json.dumps({"dsn":  {"host": "192.168.0.10", "port": "5432", "dbname": "db_01"}, "query": "select id, code, option, description, value, rate, created_at, updated_at, status, to_char(updated_at, 'YYYY-MM-DD') as date from public.tb_01 where updated_at >= '%(start)s' and updated_at < '%(end)s'", "parameters":  {"end": "2023-10-03 00:00:00", "start": "2023-10-02 00:00:00"}, "array_size": 1000000, "data_file_format": "parquet", "partition_by": ["date"], "storage_path": "s3a://ddfs-bucket-01/group/company/db_01_public_tb_02", "object_name": "db_01_public_tb_02", "batch_id": 3})
-batch3 = json.dumps({"dsn":  {"host": "192.168.0.10", "port": "5432", "dbname": "db_01"}, "query": "select id, code, option, description, value, rate, created_at, updated_at, status, to_char(updated_at, 'YYYY-MM-DD') as date from public.tb_01 where updated_at >= '%(start)s' and updated_at < '%(end)s'", "parameters":  {"end": "2023-10-04 00:00:00", "start": "2023-10-03 00:00:00"}, "array_size": 1000000, "data_file_format": "parquet", "partition_by": ["date"], "storage_path": "s3a://ddfs-bucket-01/group/company/db_01_public_tb_03", "object_name": "db_01_public_tb_03", "batch_id": 4})
+import lib.data_manipulation
 
-proc1 = subprocess.Popen(['spark-submit', 'service1.py', '-b', batch1])
-proc2 = subprocess.Popen(['spark-submit', 'service1.py', '-b', batch2])
-proc3 = subprocess.Popen(['spark-submit', 'service1.py', '-b', batch3])
+def worker(batch):
+    with subprocess.Popen(['spark-submit', 'service1.py', '-b', json.dumps(batch)]) as p:
+        p.wait()
+    return batch['batch_id']
 
-proc1.wait()
-proc2.wait()
-proc3.wait()
+def main():
+    batches = lib.data_manipulation.pgsql_data_read(
+        dsn = {
+            "host": os.environ['PYETLDB_HOST'],
+            "port": os.environ['PYETLDB_PORT'],
+            "dbname": os.environ['PYETLDB_DBNAME'],
+            "user": os.environ['PYETLDB_USER'],
+            "password": os.environ['PYETLDB_PASSWORD']
+        },
+        query="""
+                select json_build_object(
+                           'dsn', ds.metadata -> 'dsn',
+                           'query', o.metadata -> 'query',
+                           'parameters', b.metadata -> 'parameters' -> 'datetime',
+                           'array_size', o.metadata -> 'array_size',
+                           'data_file_format', o.data_file_format,
+                           'partition_by', o.metadata -> 'partition_by',
+                           'storage_path', b.metadata -> 'parameters' -> 'storage_path',
+                           'object_name', o.name,
+                           'batch_id', b.id
+                       ) as batches
+                  from tb_data_sources as ds
+            inner join tb_objects as o
+                    on ds.id = o.data_source_id
+            inner join tb_batches as b
+                    on o.id = b.object_id
+                 where ds.type = 'database'
+                   and b.extraction_status = 0
+                   and b.number_of_extraction_attempts < o.number_of_extraction_attempts
+                   and b.extraction_datetime <= current_timestamp at time zone 'America/Sao_Paulo' - (o.extraction_interval::text || ' second')::interval
+              order by b.extraction_datetime asc
+                     , o.id asc
+                 limit 6
+        """
+    )
+    with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
+        futures = [executor.submit(worker, batch) for batch in batches]
+        for future in concurrent.futures.as_completed(futures):
+            try:
+                print(future.result())
+            except Exception as e:
+                print(e)
+
+if __name__ == '__main__':
+    main()
