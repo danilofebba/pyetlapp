@@ -26,10 +26,12 @@ def main():
                            'parameters', b.metadata -> 'parameters' -> 'datetime',
                            'array_size', o.metadata -> 'array_size',
                            'data_file_format', o.data_file_format,
-                           'partition_by', o.metadata -> 'partition_by',
-                           'storage_path', b.metadata -> 'parameters' -> 'storage_path',
+                           'batch_id', b.id,
                            'object_name', o.name,
-                           'batch_id', b.id
+                           'bucket', o."storage" -> 'bucket',
+                           'prefix_path', b.metadata -> 'parameters' -> 'prefix_path',
+                           'storage_path', b.metadata -> 'parameters' -> 'storage_path',
+                           'partition_by', o.metadata -> 'partition_by'
                        ) as batches
                   from tb_data_sources as ds
             inner join tb_objects as o
@@ -42,7 +44,6 @@ def main():
                    and b.extraction_datetime <= current_timestamp at time zone 'America/Sao_Paulo' - (o.extraction_interval::text || ' second')::interval
               order by b.extraction_datetime asc
                      , o.id asc
-                 limit 6
         """
     )
     with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
