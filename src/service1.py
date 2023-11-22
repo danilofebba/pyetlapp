@@ -1,6 +1,8 @@
 import os
 import time
 import json
+import uuid
+import boto3
 
 import argparse
 parser = argparse.ArgumentParser()
@@ -38,12 +40,29 @@ extracted_rows = df.count()
 extraction_time = round(time.time() - t, 3)
 
 t = time.time()
+path_id = str(uuid.uuid4())
 df.write \
     .format(batch['data_file_format']) \
     .option('compression', 'gzip') \
     .partitionBy(batch['partition_by']) \
     .mode('append') \
-    .save(batch['storage_path'])
+    .save(os.path.join(batch['storage_path'], path_id))
+s3 = boto3.resource(
+    's3',
+    endpoint_url = os.environ['STORAGE_ENDPOINT'],
+    aws_access_key_id = os.environ['AWS_ACCESS_KEY_ID'],
+    aws_secret_access_key = os.environ['AWS_SECRET_ACCESS_KEY']
+)
+bucket = s3.Bucket(batch['bucket'])
+for object in bucket.objects.filter(Prefix=os.path.join(batch['prefix_path'], path_id)):
+    if object.key != os.path.join(batch['prefix_path'], path_id, '_SUCCESS'):
+        s3.Object(
+            bucket_name = batch['bucket'],
+            key = object.key.replace(f'{path_id}/', '')
+        ).copy_from(
+            CopySource=os.path.join(object.bucket_name, object.key)
+        )
+    object.delete()
 load_time = round(time.time() - t, 3)
 
 spark.stop()
