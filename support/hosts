@@ -1,4 +1,5 @@
 192.168.0.10 pgsql_transactional_01
+192.168.0.11 mssql_transactional_01
 192.168.0.20 minio
 192.168.0.30 spark-master
 192.168.0.31 spark-worker-01
