@@ -15,6 +15,19 @@ services:
       eth_01:
         ipv4_address: 192.168.0.10
 
+#  svc-mssql_transactional_02:
+#    image: mcr.microsoft.com/mssql/server:2022-latest
+#    container_name: ctn-mssql_transactional_02
+#    hostname: mssql_transactional_02
+#    ports:
+#      - "1433:1433"
+#    environment:
+#      - ACCEPT_EULA=Y
+#      - MSSQL_SA_PASSWORD=qwert12345!@#$%
+#    networks:
+#      eth_01:
+#        ipv4_address: 192.168.0.11
+
   svc-minio:
     image: quay.io/minio/minio
     container_name: ctn-minio
@@ -134,6 +147,7 @@ services:
       - ./share:/opt/pyetlapp/share
     depends_on:
       - svc-pgsql_transactional_01
+#      - svc-mssql_transactional_02
       - svc-minio
       - svc-spark-master
       - svc-spark-worker-01
@@ -143,20 +157,20 @@ services:
       eth_01:
         ipv4_address: 192.168.0.41
 
-  svc-pgadmin:
-    image: dpage/pgadmin4
-    container_name: ctn-pgadmin
-    hostname: pgadmin
-    ports:
-      - "80:80"
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=admin@domain.com
-      - PGADMIN_DEFAULT_PASSWORD=123456
-    volumes:
-      - ./pgadmin4/servers.json:/pgadmin4/servers.json
-    networks:
-      eth_01:
-        ipv4_address: 192.168.0.50
+#  svc-pgadmin:
+#    image: dpage/pgadmin4
+#    container_name: ctn-pgadmin
+#    hostname: pgadmin
+#    ports:
+#      - "80:80"
+#    environment:
+#      - PGADMIN_DEFAULT_EMAIL=admin@domain.com
+#      - PGADMIN_DEFAULT_PASSWORD=123456
+#    volumes:
+#      - ./pgadmin4/servers.json:/pgadmin4/servers.json
+#    networks:
+#      eth_01:
+#        ipv4_address: 192.168.0.50
     
 networks:
   eth_01:
