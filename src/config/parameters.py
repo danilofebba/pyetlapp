@@ -23,7 +23,8 @@ data_sources = [
                 "data_file_format": "parquet",
                 "data_file_schema": None,
                 "storage": {
-                    "bucket": "s3a://ddfs-bucket-01",
+                    "uri_scheme": "s3a",
+                    "bucket": "ddfs-bucket-01",
                     "object_path": {"group": "my_group", "company": "my_company"}
                 },
                 "metadata": {
