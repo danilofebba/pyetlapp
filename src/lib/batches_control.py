@@ -131,6 +131,7 @@ def pgsql_db_creation(dsn, parameters):
                                    'extraction_interval', objects.extraction_interval,
                                    'extraction_period', objects.extraction_period,
                                    'extraction_timezone', objects.extraction_timezone,
+                                   'uri_scheme', objects.storage -> 'uri_scheme',
                                    'bucket', objects.storage -> 'bucket',
                                    'object_path', objects.storage -> 'object_path'
                                ) as data
@@ -151,9 +152,11 @@ def pgsql_db_creation(dsn, parameters):
                             dti = extraction_start.astimezone(dateutil.tz.gettz(object['extraction_timezone'])) - datetime.timedelta(seconds=object['extraction_interval'] * i)
                             dtf = (extraction_start.astimezone(dateutil.tz.gettz(object['extraction_timezone'])) + datetime.timedelta(seconds=object['extraction_interval'])) - datetime.timedelta(seconds=object['extraction_interval'] * i)
                             if object['object_path']:
-                                storage_path = os.path.join(object['bucket'], *object['object_path'], object['name'])
+                                storage_path = f"{object['uri_scheme']}://{os.path.join(object['bucket'], *object['object_path'], object['name'])}"
+                                prefix_path = os.path.join(*object['object_path'], object['name'])
                             else:
-                                storage_path = os.path.join(object['bucket'], object['name'])
+                                storage_path = f"{object['uri_scheme']}://{os.path.join(object['bucket'], object['name'])}"
+                                prefix_path = object['name']
                             ########################################### variable ###########################################
                             metadata = {
                                 'parameters': {
@@ -161,6 +164,7 @@ def pgsql_db_creation(dsn, parameters):
                                         'start': dti.strftime('%Y-%m-%d %H:%M:%S'),
                                         'end': dtf.strftime('%Y-%m-%d %H:%M:%S')
                                     },
+                                    'prefix_path': prefix_path,
                                     'storage_path': storage_path
                                 }
                             }
