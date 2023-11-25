@@ -38,7 +38,10 @@ RUN apk --no-cache add \
     python3-dev \
     py3-pip \
     py3-boto3 \
-    jupyter-notebook
+    awc-cli
+############################# TMP ####################################
+RUN apk --no-cache add jupyter-notebook 
+######################################################################
 RUN python3 -m pip install --upgrade --no-cache-dir pip \
     setuptools \
     wheel \
