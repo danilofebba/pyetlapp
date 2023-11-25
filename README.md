@@ -5,6 +5,18 @@ Python ETL Application
 - Edit /etc/hosts
 - Read jars/README.md
 
+## MinIO
+### Starting
+[AWS CLI with MinIO Server](https://min.io/docs/minio/linux/integrations/aws-cli-with-minio.html)
+```bash
+source /opt/pyetlapp/config/pyetlapp_env.sh
+aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID; aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY; aws configure set default_region_name us-east-1; aws configure set default_output_format json
+aws --endpoint-url $STORAGE_ENDPOINT s3 mb s3://my-bucket
+git clone https://github.com/danilofebba/pyetlapp.git ~/Documents/pyetlapp
+python3 /opt/pyetlapp/share/database_loader.py
+```
+
+
 ## AWS
 ### Starting
 [AWS > IAM > Getting Started > Create Administrators Group](https://docs.aws.amazon.com/pt_br/IAM/latest/UserGuide/getting-started_create-admin-group.html)
