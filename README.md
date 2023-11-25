@@ -9,11 +9,22 @@ Python ETL Application
 ### Starting
 [AWS CLI with MinIO Server](https://min.io/docs/minio/linux/integrations/aws-cli-with-minio.html)
 ```bash
+git clone https://github.com/danilofebba/pyetlapp.git ~/Documents/pyetlapp
+curl https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.12.505/aws-java-sdk-bundle-1.12.505.jar -o ~/Documents/pyetlapp/jars/aws-java-sdk-bundle-1.12.505.jar
+curl https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.3.4/hadoop-aws-3.3.4.jar -o ~/Documents/pyetlapp/jars/hadoop-aws-3.3.4.jar
+curl https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-common/3.3.4/hadoop-common-3.3.4.jar -o ~/Documents/pyetlapp/jars/hadoop-common-3.3.4.jar
+curl https://repo1.maven.org/maven2/org/postgresql/postgresql/42.6.0/postgresql-42.6.0.jar -o ~/Documents/pyetlapp/jars/postgresql-42.6.0.jar
+curl https://dlcdn.apache.org/spark/spark-3.4.1/spark-3.4.1-bin-hadoop3-scala2.13.tgz -o ~/Documents/pyetlapp/jars/spark-3.4.1-bin-hadoop3-scala2.13.tgz
+cd ~/Documents/pyetlapp
+docker compose up --build
+
+docker exec -it ctn-pyetlapp bash
 source /opt/pyetlapp/config/pyetlapp_env.sh
 aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID; aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY; aws configure set default_region_name us-east-1; aws configure set default_output_format json
 aws --endpoint-url $STORAGE_ENDPOINT s3 mb s3://my-bucket
-git clone https://github.com/danilofebba/pyetlapp.git ~/Documents/pyetlapp
 python3 /opt/pyetlapp/share/database_loader.py
+
+./start-pyetlapp.sh
 ```
 
 
